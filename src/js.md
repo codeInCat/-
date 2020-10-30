@@ -111,6 +111,66 @@ if (!Function.prototype.bind) {
 
 ## 原型链
 
+![](https://raw.githubusercontent.com/mqyqingfeng/Blog/master/Images/prototype5.png)
+
+```
+function Person () {
+
+}
+
+var person = new Person();
+
+person.constructor = Person.prototype.constructor = Person;
+
+Object.prototype.__proto__ === null
+
+```
+
+
+```
+//组合模式创建对象
+function Person(name, age, job){
+    this.name = name; 
+    this.age = age;
+    this.job = job;
+    this.friends = ["Shelby", "Court"];
+  }
+Person.prototype = { 
+    constructor : Person, 
+    sayName : function(){
+        alert(this.name); 
+    }
+}
+var person1 = new Person("Nicholas", 29, "Software Engineer"); 
+var person2 = new Person("Greg", 27, "Doctor");
+```
+
+```
+//寄生组合继承
+function SuperType(name){
+    this.name = name;
+    this.colors = ["red", "blue", "green"];
+}
+SuperType.prototype.sayName = function(){ 
+    alert(this.name);
+};
+
+
+function inheritPrototype(SubType, SuperType) {
+    var prototype = Object(SuperType.prototype);
+    prototype.constructor = SubType;
+    SubType.prototype = prototype;
+}
+
+function SubType(name, age){ 
+    SuperType.call(this, name);
+    this.age = age; 
+}
+inheritPrototype(SubType, SuperType);
+SubType.prototype.sayAge = function(){ alert(this.age);};
+
+```
+
 
 ## 深拷贝
 

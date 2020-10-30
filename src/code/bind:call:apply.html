@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+
+        function getThis () {
+            return this;
+        }
+
+        Function.prototype.call2 = function (argThis) {
+            argThis = argThis || getThis();
+            if(Object.prototype.toString.call(this) !== '[object Function]') {
+                throw new Error('Type Error');
+            }
+        
+            var params = Array.prototype.slice.call(arguments, 1);
+            argThis.fn = this;
+            var res =  eval('argThis.fn('+ params.join(',') +')')
+            delete argThis.fn;
+            return res;
+        };
+
+
+        Function.prototype.apply2 = function (argThis, arr) {
+            argThis = argThis || getThis();
+            if(Object.prototype.toString.call(this) !== '[object Function]') {
+                throw new Error('Type Error');
+            }
+
+            argThis.fn = this;
+
+            var res;
+
+            if (!arr) {
+                res = argThis.fn();
+            } else {
+                res =  eval('argThis.fn('+ arr.join(',') +')')
+            }
+    
+            delete argThis.fn;
+            return res;
+        };
+
+        Function.prototype.bind2 = function (argThis) {
+
+            if(Object.prototype.toString.call(this) !== '[object Function]') {
+                throw new Error('Type Error');
+            }
+
+            var args = Array.prototype.slice.call(arguments, 1);
+
+            var self = this;
+
+            var fn =  function () {
+                var argself = Array.prototype.slice.call(arguments);
+                self.apply(this.instanceOf(self) ? this : argThis, args.concat(argself));
+            }
+
+            var fNOP = function () {}; //过度用
+
+            fNOP.prototype = self.prototype;
+
+            fn.prototype = new fNOP();
+
+            return fn
+        };
+
+        var value = 99;
+
+        var foo = {
+            value: 88
+        };
+
+        function showValue (add) {
+            console.log(this.value + (add || 0));
+        }
+
+        // showValue.call2(foo, 20);
+
+        // showValue.apply2(foo, [20]);
+
+        showValue.bind2(foo)(10)
+
+
+    </script>
+</body>
+</html>

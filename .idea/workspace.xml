@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="bb5ac2d3-8225-4fac-a6c3-5845433cf830" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/code/promise.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/js.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/js.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/css.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/css.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,7 +44,7 @@
       <updated>1603676590230</updated>
       <workItem from="1603676591393" duration="9312000" />
       <workItem from="1603846955371" duration="588000" />
-      <workItem from="1603848365553" duration="8748000" />
+      <workItem from="1603848365553" duration="17574000" />
     </task>
     <servers />
   </component>
@@ -58,6 +59,10 @@
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="221" y="89" key="SettingsEditor/0.0.1440.900/-1580.-1080.1920.1080@0.0.1440.900" timestamp="1603848297261" />
+    <state x="421" y="205" width="598" height="490" key="find.popup" timestamp="1604219900356">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="421" y="205" width="598" height="490" key="find.popup/0.0.1440.900/-1580.-1080.1920.1080@0.0.1440.900" timestamp="1604219900356" />
     <state x="385" y="196" width="670" height="676" key="search.everywhere.popup" timestamp="1603863516122">
       <screen x="0" y="0" width="1440" height="900" />
     </state>

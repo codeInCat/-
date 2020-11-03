@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+
+  const PENDING = "pending";
+  const FULFILLED = "fulfilled";
+  const REJECTED = "rejected";
+
+  const MyPromise = function (fn) {
+    let self = this;
+    self.value = null;
+    self.error = null;
+    self.onFulfilledCallbacks = [];
+    self.onRejectedCallbacks = [];
+    self.status = PENDING;
+
+    function resolve(value) {
+      //setTimeout支持同步任务 避免onFullfilled/onRejected还为null 同步任务resolve已经执行
+      if (self.status === PENDING) {
+        setTimeout(() => {
+          self.status = FULFILLED;
+          self.value = value;
+          self.onFulfilledCallbacks.forEach((callback) => callback(self.value));
+        })
+      }
+    }
+
+    function reject(error) {
+      //setTimeout支持同步任务 避免onFullfilled/onRejected还为null 同步任务resolve已经执行
+      if (self.status === PENDING) {
+        setTimeout(() => {
+          self.status = REJECTED;
+          self.error = error;
+          self.onRejectedCallbacks.forEach((callback) => callback(self.error));
+        })
+      }
+    }
+
+    fn(resolve, reject);
+  }
+
+  MyPromise.prototype.then = function (onFulfilled, onRejected) {
+    const self = this;
+    let bridgePromise;
+
+    // 兼容处理
+    onFulfilled = typeof onFulfilled === "function" ? onFulfilled : value => value;
+    onRejected = typeof onRejected === "function" ? onRejected : error => {
+      throw error
+    };
+
+    if (self.status === PENDING) {
+      return bridgePromise = new MyPromise((resolve, reject) => {
+        self.onFulfilledCallbacks.push((value) => {
+          try {
+            let x = onFulfilled(value);
+            resolvePromise(bridgePromise, x, resolve, reject);
+          } catch (e) {
+            reject(e);
+          }
+        });
+        self.onRejectedCallbacks.push((error) => {
+          try {
+            let x = onRejected(error);
+            resolvePromise(bridgePromise, x, resolve, reject);
+          } catch (e) {
+            reject(e);
+          }
+        });
+      });
+
+    } else if (self.status === FULFILLED) {
+      return bridgePromise = new MyPromise((resolve, reject) => {
+        setTimeout(() => {
+          try {
+            let x = onFulfilled(self.value);
+            resolvePromise(bridgePromise, x, resolve, reject);
+          } catch (e) {
+            reject(e);
+          }
+        });
+      })
+
+    } else if (self.status === REJECTED) {
+      return bridgePromise = new MyPromise((resolve, reject) => {
+        setTimeout(() => {
+          try {
+            let x = onRejected(self.error);
+            resolvePromise(bridgePromise, x, resolve, reject);
+          } catch (e) {
+            reject(e);
+          }
+        });
+      });
+
+    }
+    return this;
+  };
+
+  //catch方法其实是个语法糖，就是只传onRejected不传onFulfilled的then方法
+  MyPromise.prototype.catch = function (onRejected) {
+    return this.then(null, onRejected);
+  }
+
+  function resolvePromise(bridgePromise, x, resolve, reject) {
+    // 判断then里是同步还是异步
+    if (x instanceof MyPromise) {
+      //如果这个promise是pending状态，就在它的then方法里继续执行resolvePromise解析它的结果，直到返回值不是一个pending状态的promise为止
+      if (x.status === PENDING) {
+        x.then(y => {
+          resolvePromise(bridgePromise, y, resolve, reject);
+        }, error => {
+          reject(error);
+        });
+      } else {
+        x.then(resolve, reject);
+      }
+    } else {
+      resolve(x)
+    }
+  }
+
+
+  MyPromise.all = function(promises) {
+    return new MyPromise(function(resolve, reject) {
+      let result = [];
+      let count = 0;
+      for (let i = 0; i < promises.length; i++) {
+        promises[i].then(function(data) {
+          result[i] = data;
+          if (++count == promises.length) {
+            resolve(result);
+          }
+        }, function(error) {
+          reject(error);
+        });
+      }
+    });
+  }
+
+  MyPromise.race = function(promises) {
+    return new MyPromise(function(resolve, reject) {
+      for (let i = 0; i < promises.length; i++) {
+        promises[i].then(function(data) {
+          resolve(data);
+        }, function(error) {
+          reject(error);
+        });
+      }
+    });
+  }
+
+  MyPromise.resolve = function(value) {
+    return new MyPromise(resolve => {
+      resolve(value);
+    });
+  }
+
+  MyPromise.reject = function(error) {
+    return new MyPromise((resolve, reject) => {
+      reject(error);
+    });
+  }
+
+
+  //参考 https://juejin.im/post/6844903617619558408#heading-34
+
+</script>
+</body>
+</html>
